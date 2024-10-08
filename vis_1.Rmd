@@ -5,6 +5,7 @@ output: github_document
 
 ```{r setup, include=FALSE}
 library(tidyverse)
+library(ggridges)
 ```
 
 Import the weather data.
@@ -26,6 +27,11 @@ weather_df =
   select(name, id, everything())
 ```
 
+Export data.
+```{r}
+write_csv(weather_df, file = "data/weather_df.csv")
+```
+
 Making our first plot.
 ```{r}
 ggplot(weather_df, aes(x = tmin, y = tmax)) +
@@ -45,5 +51,186 @@ ggp_weather_scatterplot =
   geom_point()
 
 ggp_weather_scatterplot
+```
+
+
+Check why some rows are missing.
+```{r}
+weather_df |>
+  filter(is.na(tmax))
+```
+
+
+## Fancier scatterplot
+```{r}
+weather_df |>
+  ggplot(aes(x = tmin, y = tmax, color = name)) +
+  geom_point(alpha = .3, size = .8) + 
+  geom_smooth(se = FALSE)
+```
+
+
+Where you define the aesthetics can matter.
+```{r}
+weather_df |>
+  ggplot(aes(x = tmin, y = tmax)) +
+  geom_point(aes(color = name), alpha = .3, size = .8) + 
+  geom_smooth(se = FALSE)
+```
+
+
+Use faceting real quick
+```{r}
+weather_df |>
+  ggplot(aes(x = tmin, y = tmax, color = name)) +
+  geom_point(alpha = .3) + 
+  geom_smooth(se = FALSE) +
+  facet_grid(. ~ name)
+```
+
+
+Let's make a somewhat more interesting scatterplot.
+```{r}
+weather_df|>
+  ggplot(aes(x = date, y = tmax, color = name, size = prcp)) +
+  geom_point(alpha = .3) +
+  geom_smooth(se = FALSE) +
+  facet_grid(. ~ name)
+```
+
+
+Learning Assesment
+```{r}
+weather_df |>
+  filter(name == "CentralPark_NY")
+  mutate(
+    tmax_fahr = tmax * (9 / 5) + 32, 
+    tmin_fahr = tmin * (9 / 5) + 32
+  ) |>
+  ggplot(aes(x = tmin_fahr, y = tmax_fahr, color = name)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) 
+```
+
+
+## Small things
+```{r}
+weather_df |>
+  ggplot(aes(x = tmin, y = tmax)) +
+  geom_point(aes(color = name), alpha = .3, size = .8) +
+  geom_smooth(se = FALSE)
+```
+
+```{r}
+weather_df |>
+  ggplot(aes(x = tmin, y = tmax)) +
+  geom_hex()
+```
+
+
+```{r}
+weather_df |>
+  ggplot(aes(x = tmin, y = tmax)) +
+  geom_point(color = "blue")
+```
+
+
+## Univariate plots
+```{r}
+weather_df |>
+  ggplot(aes(x = tmin)) +
+  geom_histogram()
+```
+
+```{r}
+weather_df |>
+  ggplot(aes(x = tmin, fill = name)) +
+  geom_histogram(position = "dodge")
+```
+
+
+How would I fix this?
+```{r}
+weather_df |>
+  ggplot(aes(x = tmin, fill = name)) +
+  geom_histogram() +
+  facet_grid(. ~ name)
+```
+
+
+Maybe a density plot?
+```{r}
+weather_df |>
+  ggplot(aes(x = tmin, fill = name)) +
+  geom_density(alpha = .3)
+```
+
+```{r}
+weather_df |>
+  ggplot(aes(x = name, y = tmin, fill = name)) +
+  geom_boxplot()
+```
+
+
+Violin plots
+```{r}
+weather_df |>
+  ggplot(aes(x = name, y = tmin, fill = name)) +
+  geom_violin()
+```
+
+
+Ridge plot
+```{r}
+weather_df |>
+  ggplot(aes(x = tmin, y = name)) +
+  geom_density_ridges()
+```
+
+Learning Assessment
+```{r}
+weather_df |>
+  ggplot(aes(x = prcp, fill = name)) +
+  geom_boxplot(alpha = .3)
+
+weather_df |>
+  ggplot(aes(x = prcp, fill = name)) +
+  geom_density()
+
+weather_df |>
+  filter(prcp > 10) |>
+  ggplot(aes(x = prcp, fill = name)) +
+  geom_density(alpha = .3)
+
+weather_df |>
+  ggplot(aes(x = prcp, fill = name)) +
+  geom_histogram()
+
+weather_df |>
+  ggplot(aes(x = prcp, fill = name)) +
+  geom_violin()
+
+weather_df |>
+  ggplot(aes(x = prcp, fill = name)) +
+  geom_density_ridges()
+```
+
+
+## Savings and embedding plots
+```{r}
+ggp_weather = 
+  weather_df |>
+  ggplot(aes(x = date, y = tmax, color = name)) +
+  geom_point()
+  
+ggsave("plots/ggp_weather.pdf", ggp_weather, width = 8, height = 6)
+```
+
+
+Embedding plots
+```{r, fig.width = 6, fig.asp = .6}
+weather_df |>
+  ggplot(aes(x = date, y = tmax, color = name)) +
+  geom_point()
 ```
 
