@@ -101,14 +101,14 @@ weather_df|>
 
 Learning Assesment
 ```{r}
-weather_df |>
-  filter(name == "CentralPark_NY")
+weather_df |> 
+  filter(name == "CentralPark_NY") |> 
   mutate(
-    tmax_fahr = tmax * (9 / 5) + 32, 
+    tmax_fahr = tmax * (9 / 5) + 32,
     tmin_fahr = tmin * (9 / 5) + 32
-  ) |>
-  ggplot(aes(x = tmin_fahr, y = tmax_fahr, color = name)) +
-  geom_point() +
+  ) |> 
+  ggplot(aes(x = tmin_fahr, y = tmax_fahr)) + 
+  geom_point() + 
   geom_smooth(method = "lm", se = FALSE) 
 ```
 
@@ -190,29 +190,18 @@ weather_df |>
 Learning Assessment
 ```{r}
 weather_df |>
-  ggplot(aes(x = prcp, fill = name)) +
-  geom_boxplot(alpha = .3)
-
-weather_df |>
-  ggplot(aes(x = prcp, fill = name)) +
-  geom_density()
-
-weather_df |>
   filter(prcp > 10) |>
   ggplot(aes(x = prcp, fill = name)) +
   geom_density(alpha = .3)
 
 weather_df |>
-  ggplot(aes(x = prcp, fill = name)) +
-  geom_histogram()
+  ggplot(aes(x = prcp, y = prcp)) +
+  geom_boxplot()
 
 weather_df |>
+  filter(prcp > 10, prcp < 1000) |> 
   ggplot(aes(x = prcp, fill = name)) +
-  geom_violin()
-
-weather_df |>
-  ggplot(aes(x = prcp, fill = name)) +
-  geom_density_ridges()
+  geom_density(alpha = .3)
 ```
 
 
